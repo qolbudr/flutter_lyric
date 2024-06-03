@@ -8,7 +8,7 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
   List<Lyric> lyrics;
 
   //翻译/音译歌词列表
-  List<Lyric> subLyrics;
+  List<Lyric>? subLyrics;
 
   //歌词画笔数组
   List<TextPainter> lyricTextPaints = [];
@@ -43,10 +43,10 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
   int currentLyricIndex = 0;
 
   //老的动画控制器
-  static AnimationController _animationController;
+  static AnimationController? _animationController;
 
   //老的上一行位置
-  static int _oldCurrentLyricIndex;
+  static int _oldCurrentLyricIndex = 0;
 
   //因空行高度与非空行高度不一致，存一个非空行的位置，绘制时使用
   var notEmptyLyricIndex = 0;
@@ -67,15 +67,15 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
   TextStyle currLyricTextStyle;
 
   LyricPainter(this.lyrics,
-      {List<Lyric> remarkLyrics,
-      double currDuration,
-      TickerProvider vsync,
-      TextStyle lyricStyle,
-      TextStyle remarkStyle,
-      TextStyle currLyricStyle,
-      this.lyricGapValue,
-      this.subLyricGapValue,
-      this.lyricMaxWidth})
+      {List<Lyric>? remarkLyrics,
+      double? currDuration,
+      TickerProvider? vsync,
+      TextStyle? lyricStyle,
+      TextStyle? remarkStyle,
+      TextStyle? currLyricStyle,
+      this.lyricGapValue = 0,
+      this.subLyricGapValue = 0,
+      this.lyricMaxWidth = 0})
       : this.lyricTextStyle =
             lyricStyle ?? TextStyle(color: Colors.grey, fontSize: 13),
         this.subLyricTextStyle =
@@ -94,15 +94,15 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
         .toList());
 
     //翻译/音译歌词转画笔
-    if (subLyrics != null && subLyrics.isNotEmpty) {
-      subLyricTextPaints.addAll(subLyrics
+    if (subLyrics != null && (subLyrics ?? []).isNotEmpty) {
+      subLyricTextPaints.addAll(subLyrics!
           .map((l) => TextPainter(
               textAlign: TextAlign.start,
               text: TextSpan(text: l.lyric, style: subLyricTextStyle),
               textDirection: TextDirection.ltr))
           .toList());
       //因空行高度与非空行高度不一致，先存一个非空行的位置
-      notEmptySubLyricIndex = getNotEmptyLineHeight(subLyrics);
+      notEmptySubLyricIndex = getNotEmptyLineHeight(subLyrics!);
       //计算默认歌词高度
       subLyricTextPaints[notEmptySubLyricIndex]
         ..layout(maxWidth: lyricMaxWidth);
@@ -125,13 +125,13 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
   animationScrollY(currentLyricIndex, TickerProvider tickerProvider) {
     if (currentLyricIndex != 0 && currentLyricIndex != _oldCurrentLyricIndex) {
       if (_animationController != null) {
-        _animationController.stop();
+        _animationController?.stop();
       }
       _animationController = AnimationController(
           vsync: tickerProvider, duration: Duration(milliseconds: 200))
         ..addStatusListener((status) {
           if (status == AnimationStatus.completed) {
-            _animationController.dispose();
+            _animationController?.dispose();
             _animationController = null;
           }
         });
@@ -142,11 +142,11 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
       // 起始为上一行，结束点为当前行
       Animation animation =
           Tween<double>(begin: previousRowOffset, end: currentRowOffset)
-              .animate(_animationController);
-      _animationController.addListener(() {
+              .animate(_animationController!);
+      _animationController?.addListener(() {
         offset = -animation.value;
       });
-      _animationController.forward();
+      _animationController?.forward();
     }
     _oldCurrentLyricIndex = currentLyricIndex;
   }
@@ -195,14 +195,14 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
       currentLyricY += currentLyricHeight + lyricGapValue;
       //如果有翻译歌词时,寻找该行歌词以后的翻译歌词
       if (subLyrics != null) {
-        List<Lyric> remarkLyrics = subLyrics
+        List<Lyric> remarkLyrics = subLyrics!
             .where((subLyric) =>
-                subLyric.startTime >= currentLyric.startTime &&
-                subLyric.endTime <= currentLyric.endTime)
+                (subLyric.startTime! >= currentLyric.startTime!) &&
+                subLyric.endTime! <= currentLyric.endTime!)
             .toList();
         remarkLyrics.forEach((remarkLyric) {
           //获取位置
-          var subIndex = subLyrics.indexOf(remarkLyric);
+          var subIndex = subLyrics!.indexOf(remarkLyric);
 
           //仅绘制在屏幕内的歌词
           if (currentLyricY < size.height && currentLyricY > 0) {
@@ -233,8 +233,8 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
   //根据当前时长获取歌词位置
   int findLyricIndexByDuration(double curDuration, List<Lyric> lyrics) {
     for (int i = 0; i < lyrics.length; i++) {
-      if (curDuration >= lyrics[i].startTime.inMilliseconds &&
-          curDuration <= lyrics[i].endTime.inMilliseconds) {
+      if (curDuration >= (lyrics[i].startTime?.inMilliseconds ?? 0) &&
+          curDuration <= (lyrics[i].endTime?.inMilliseconds ?? 0)) {
         return i;
       }
     }
@@ -251,8 +251,8 @@ class LyricPainter extends CustomPainter with ChangeNotifier {
     }
     if (subLyrics != null) {
       //增加 当前行之前的翻译歌词的偏移量
-      var list = subLyrics
-          .where((subLyric) => subLyric.endTime <= lyrics[curLine].endTime)
+      var list = subLyrics!
+          .where((subLyric) => subLyric.endTime! <= lyrics[curLine].endTime!)
           .toList();
       totalHeight += list.length * (subLyricGapValue + _subLyricHeight);
     }

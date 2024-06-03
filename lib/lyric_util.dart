@@ -4,14 +4,14 @@ class LyricUtil {
   static var tags = ['ti', 'ar', 'al', 'offset', 'by'];
 
   /// 格式化歌词
-  static List<Lyric> formatLyric(String lyricStr) {
+  static List<Lyric>? formatLyric(String? lyricStr) {
     if (lyricStr == null || lyricStr.trim().length == 0) {
       return null;
     }
     lyricStr = lyricStr.replaceAll("\r", "");
     RegExp reg = RegExp(r"""\[(.*?):(.*?)\](.*?)\n""");
 
-    Iterable<Match> matches;
+    Iterable<Match>? matches;
     try {
       matches = reg.allMatches(lyricStr);
     } catch (e) {
@@ -19,7 +19,7 @@ class LyricUtil {
     }
 
     List<Lyric> lyrics = [];
-    List list = matches.toList();
+    List? list = matches?.toList();
     if (list != null) {
       for (int i = 0; i < list.length; i++) {
         var temp = list[i];

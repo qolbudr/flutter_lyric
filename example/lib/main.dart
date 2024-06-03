@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_lyric/lyric_controller.dart';
 import 'package:flutter_lyric/lyric_util.dart';
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -42,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool showSelect = false;
   Duration start = new Duration(seconds: 0);
   //歌词控制器
-  LyricController controller;
+  late LyricController controller;
 
   @override
   void initState() {
@@ -77,38 +75,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 alignment: Alignment.center,
                 children: <Widget>[
                   Center(
-                      child: LyricWidget(
-                    size: Size(double.infinity, double.infinity),
-                    lyrics: lyrics,
-                    controller: controller,
-                    remarkLyrics: remarkLyrics,
-                  )),
-                  Offstage(
-                    offstage: !showSelect,
-                    child: GestureDetector(
-                      onTap: () {
-                        //点击选择器后移动歌词到滑动位置;
-                        controller.draggingComplete();
-                        //当前进度
-                        print("进度:${controller.draggingProgress}");
-                        setState(() {
-                          slider = controller.draggingProgress.inSeconds.toDouble();
-                        });
-                      },
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.play_circle_outline,
-                            color: Colors.green,
-                          ),
-                          Expanded(
-                              child: Divider(
-                            color: Colors.red,
-                          )),
-                        ],
-                      ),
+                    child: LyricWidget(
+                      currentProgress: 0,
+                      vsync: this,
+                      size: Size(double.infinity, double.infinity),
+                      lyrics: lyrics ?? [],
+                      remarkLyrics: remarkLyrics,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

@@ -6,7 +6,7 @@ homepage: https://github.com/ozyl/flutter_lyric
 email: zylvip@163.com
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: '>=3.3.4 <4.0.0'
 
 dependencies:
   flutter:
