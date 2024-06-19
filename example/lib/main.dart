@@ -78,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     child: LyricWidget(
                       currentProgress: 0,
                       vsync: this,
-                      size: Size(double.infinity, double.infinity),
                       lyrics: lyrics ?? [],
                       remarkLyrics: remarkLyrics,
                     ),

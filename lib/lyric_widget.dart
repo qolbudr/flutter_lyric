@@ -5,7 +5,6 @@ import 'lyric_painter.dart';
 class LyricWidget extends StatefulWidget {
   final List<Lyric> lyrics;
   final List<Lyric>? remarkLyrics;
-  final Size size;
   final double currentProgress;
   final TickerProvider vsync;
 
@@ -22,7 +21,6 @@ class LyricWidget extends StatefulWidget {
     Key? key,
     required this.lyrics,
     this.remarkLyrics,
-    required this.size,
     required this.currentProgress,
     required this.vsync,
     this.lyricStyle,
@@ -31,7 +29,7 @@ class LyricWidget extends StatefulWidget {
     this.lyricGap = 10,
     this.remarkLyricGap = 20,
     double? lyricMaxWidth,
-  }) : this.lyricMaxWidth = lyricMaxWidth ?? size.width;
+  }) : this.lyricMaxWidth = lyricMaxWidth ?? 0;
 
   @override
   _LyricWidgetState createState() => _LyricWidgetState();
@@ -53,7 +51,6 @@ class _LyricWidgetState extends State<LyricWidget> {
         lyricMaxWidth: widget.lyricMaxWidth,
         subLyricGapValue: widget.remarkLyricGap,
       ),
-      size: widget.size,
     );
   }
 }
